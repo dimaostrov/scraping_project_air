@@ -1,17 +1,17 @@
 import express from "express";
-import carController from "../controllers/cars.controller"
+import cityController from "../controllers/cities.controller"
 const router = express.Router()
 
-router.get('/allcars', (req, res) => {
-    carController.getAll(req, res);
+router.get('/allcities', (req, res) => {
+    cityController.getAll(req, res);
 });
 
-router.post('/addcar', (req, res) => {
-    carController.addCar(req, res);
+router.post('/addcity', (req, res) => {
+    cityController.addcity(req, res);
 });
 
-router.delete('/deletecar', (req, res) => {
-    carController.deleteCar(req, res);
+router.delete('/deletecity', (req, res) => {
+    cityController.deletecity(req, res);
 });
 
 export default router;
