@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const citieschema = mongoose.Schema({
+const citieSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -24,21 +24,30 @@ const citieschema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  boundary: {
+    type: Object,
+  },
+  annual_revenue_potential: {
+    type: Object
+  },
+  zipcodes: {
+    type: Object
+  }
 
 },
   { collection: 'city' });
 
-const citiesModel = mongoose.model('city', citieschema);
+const citiesModel = mongoose.model('city', citieSchema);
 
 citiesModel.getAll = () => {
   return citiesModel.find({});
 }
 
-citiesModel.addcity = (cityToAdd) => {
+citiesModel.addCity = (cityToAdd) => {
   return cityToAdd.save();
 }
 
-citiesModel.removecity = (cityName) => {
+citiesModel.removeCity = (cityName) => {
   return citiesModel.remove({ name: cityName });
 }
 

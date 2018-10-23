@@ -1,7 +1,7 @@
 import axios from 'axios';
 import citiesModel from './models/cities.model';
 import fs from 'fs';
-
+import dbConnection from './db/connect';
 // SF, SD and LA is 6, Nashvile Tennessee is 44
 // Boston MAssachustes is 23
 // Philly is in Pennsylvania, ID is 40
@@ -13,53 +13,73 @@ import fs from 'fs';
 // Chicago is Illinois, 15
 // Puerto Rico is 56
 
+dbConnection();
 
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
 const TEST_STATE = 6
-const access_token = 'MjM3Ng%7C7b476c889c05433a926787864ce07a59';
+const access_token = 'MjM3Ng|0211989ae83d4253a6fa9f254da36a8b';
 
-const zipcodesEndpoint = city_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&city_id=${city_id}&show_hvi=true`;
+const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&city_id=${city_id}&show_hvi=true`;
 
 const cityEndpoint = state_id => `https://api.airdna.co/v1/explorer/cities?access_token=${access_token}&bedrooms=2&bedrooms=3&state_id=${state_id}`;
 
 const topListings = region_id => `https://api.airdna.co/v1/explorer/top-listings?access_token=${access_token}&bedrooms=2&bedrooms=3&region_id=${region_id}`;
 
-async function go() {
+async function go(fn, stateId) {
   try {
-    const cityData = axios.get(cityEndpoint(TEST_STATE))
+    const cityData = axios.get(fn(stateId))
     const res = await cityData;
-    const cities = res.data.cities;
+    const cities = await res.data.cities;
     cities.map(x => x.city.annual_revenue_potential['50th'] > 40000 && addCityToDB(x.city));
   } catch (e) {
     console.error(e);
   }
 }
 
-go()
-  /*
-   * API endpoints
-   * 
-   * cities - annual_revenue_potential, name of the city
-   * 
-   * zipcodes - we have zipcodes, takes in a state ID, also annual_rental_earning_potential
-   *      result.zip_codes.filter(zip => zip.annual_revenue_potential.50th > 40000 && {...zip})       
-   *      also result.zip_codes.map(zip => region_id)
-   * top-listings - 25 of the top listings, needs cityID
-   * 
-   * 
-   */
+// stateIDs.map(x => go(x));
+
+citiesModel.find({}, function(err, cities){
+  [60223, 60251].map(async city => {
+    let city_id = city.city_id;
+    const zipCodeData = axios.get(zipcodesEndpoint(city_id));
+    const res = await zipCodeData;
+    console.log(res);
+    res.map(zip => {
+      let name = zip.zip_code.name;
+      citiesModel.update({ name: name }, { $set: { zip: zip.zip_code }}, (err, done) => {
+        if(err) return err;
+        console.log(done, 'done');
+      });
+  
+    }) 
+  })
+})
+
+/*
+* API endpoints
+* 
+ * cities - annual_revenue_potential, name of the city
+ * 
+ * zipcodes - we have zipcodes, takes in a state ID, also annual_rental_earning_potential
+ *      result.zip_codes.filter(zip => zip.annual_revenue_potential.50th > 40000 && {...zip})       
+ *      also result.zip_codes.map(zip => region_id)
+ * top-listings - 25 of the top listings, needs cityID
+ * 
+ * 
+ */
 
 const addCityToDB = (city) => {
-  citiesModel.create(city, (err, record) => {
-    if (err) return (err);
-    console.log('saved city' + record);
-  })
+  
+  citiesModel.create(city, function (err, record) {
+    if (err) return err;
+    console.log(record)
+  });
 }
 
 const writeToFile = (res, fileNameToWrite) => {
   fs.writeFileSync(`./data/${fileNameToWrite}.json`, JSON.stringify(res.data, null, 4), (err) => {
-    if(err) {
+    if (err) {
       console.log('An error occured while writing JSON');
       return console.log(err);
     }
