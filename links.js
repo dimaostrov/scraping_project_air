@@ -15,12 +15,12 @@ import dbConnection from './db/connect';
 
 dbConnection();
 
-const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
+const stateIDs = [6, 11, 23, 39, 40, 44, 45, 56]
 
 const TEST_STATE = 6
 const access_token = 'MjM3Ng|0211989ae83d4253a6fa9f254da36a8b';
 
-const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&city_id=${city_id}&show_hvi=true`;
+const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&state_id=${state_id}&show_hvi=true`;
 
 const cityEndpoint = state_id => `https://api.airdna.co/v1/explorer/cities?access_token=${access_token}&bedrooms=2&bedrooms=3&state_id=${state_id}`;
 
@@ -30,17 +30,20 @@ async function go(fn, stateId) {
   try {
     const cityData = axios.get(fn(stateId))
     const res = await cityData;
-    const cities = await res.data.cities;
-    cities.map(x => x.city.annual_revenue_potential['50th'] > 40000 && addCityToDB(x.city));
+    const cities = await res.data.zip_codes;
+    cities.map(x => addRegionToCity(x.zip_code));
   } catch (e) {
     console.error(e);
   }
 }
 
-// stateIDs.map(x => go(x));
+stateIDs.map(x => go(zipcodesEndpoint, x));
 
+
+
+/*
 citiesModel.find({}, function(err, cities){
-  [60223, 60251].map(async city => {
+  cities.map(async city => {
     let city_id = city.city_id;
     const zipCodeData = axios.get(zipcodesEndpoint(city_id));
     const res = await zipCodeData;
@@ -55,6 +58,7 @@ citiesModel.find({}, function(err, cities){
     }) 
   })
 })
+*/
 
 /*
 * API endpoints
@@ -74,6 +78,13 @@ const addCityToDB = (city) => {
   citiesModel.create(city, function (err, record) {
     if (err) return err;
     console.log(record)
+  });
+}
+
+const addRegionToCity = (zip) => {
+  citiesModel.update({name: zip.city_name}, { $push: { regions: zip.region_id }}, (err, record) => {
+    if (err) return err;
+    console.log(record);
   });
 }
 

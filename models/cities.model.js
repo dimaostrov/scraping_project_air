@@ -30,9 +30,9 @@ const citieSchema = mongoose.Schema({
   annual_revenue_potential: {
     type: Object
   },
-  zipcodes: {
-    type: Object
-  }
+  regions: [{
+    type: Number, unique: true
+  }]
 
 },
   { collection: 'city' });
