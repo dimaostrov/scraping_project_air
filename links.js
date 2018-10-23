@@ -29,8 +29,8 @@ async function go() {
   try {
     const cityData = axios.get(cityEndpoint(TEST_STATE))
     const res = await cityData;
-    cities = res.data.cities;
-    cities.map(x => x.city.annual_revenue_potential['50th'] > 40000 && addCityToDB(x.city))
+    const cities = res.data.cities;
+    cities.map(x => x.city.annual_revenue_potential['50th'] > 40000 && addCityToDB(x.city));
   } catch (e) {
     console.error(e);
   }
@@ -49,6 +49,13 @@ go()
    * 
    * 
    */
+
+const addCityToDB = (city) => {
+  citiesModel.create(city, (err, record) => {
+    if (err) return (err);
+    console.log('saved city' + record);
+  })
+}
 
 const writeToFile = (res, fileNameToWrite) => {
   fs.writeFileSync(`./data/${fileNameToWrite}.json`, JSON.stringify(res.data, null, 4), (err) => {
