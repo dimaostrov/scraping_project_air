@@ -1,5 +1,6 @@
 import axios from 'axios';
 import citiesModel from './models/cities.model';
+import fs from 'fs';
 
 // SF, SD and LA is 6, Nashvile Tennessee is 44
 // Boston MAssachustes is 23
@@ -15,18 +16,28 @@ import citiesModel from './models/cities.model';
 
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
-const TEST_STATE = 34
+const TEST_STATE = 6
+const access_token = 'MjM3Ng%7C7b476c889c05433a926787864ce07a59';
 
-const ZIPCODES_ENDPOINT = city_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=MjM3Ng%7C045672c381ee436dab98752d4361478a&city_id=${city_id}&show_hvi=true`;
+const zipcodesEndpoint = city_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&city_id=${city_id}&show_hvi=true`;
 
-const CITYID_ENDPOINT = state_id => `https://api.airdna.co/v1/explorer/cities?access_token=MjM3Ng%7C045672c381ee436dab98752d4361478a&bedrooms=2&bedrooms=3&state_id=${state_id}`;
+const cityEndpoint = state_id => `https://api.airdna.co/v1/explorer/cities?access_token=${access_token}&bedrooms=2&bedrooms=3&state_id=${state_id}`;
 
-const TOP_LISTINGS = region_id => `https://api.airdna.co/v1/explorer/top-listings?access_token=MjM3Ng%7C045672c381ee436dab98752d4361478a&bedrooms=2&bedrooms=3&region_id=${region_id}`;
+const topListings = region_id => `https://api.airdna.co/v1/explorer/top-listings?access_token=${access_token}&bedrooms=2&bedrooms=3&region_id=${region_id}`;
 
 async function go() {
   try {
-    const cityData = axios.get(CITYID_ENDPOINT(TEST_STATE))
-    console.log(await cityData);
+    const cityData = axios.get(cityEndpoint(TEST_STATE))
+    const res = await cityData;
+    const cities = 
+    fs.writeFileSync('./data/ca.json', JSON.stringify(res.data, null, 4), (err) => {
+      if(err) {
+        console.log('An error occured while writing JSON');
+        return console.log(err);
+      }
+      console.log('JSON file has been saved');
+      console.log(res);
+    })
   } catch (e) {
     console.error(e);
   }
