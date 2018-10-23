@@ -1,21 +1,27 @@
 import mongoose from 'mongoose';
 
 const citieschema = mongoose.Schema({
-    name: {type: String, required: true, unique: true, index: true}
-}, {collection : 'city'});
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+  },
+},
+  { collection: 'city' });
 
-let citiesModel = mongoose.model('city', citieschema);
+const citiesModel = mongoose.model('city', citieschema);
 
 citiesModel.getAll = () => {
-    return citiesModel.find({});
+  return citiesModel.find({});
 }
 
 citiesModel.addcity = (cityToAdd) => {
-    return cityToAdd.save();
+  return cityToAdd.save();
 }
 
 citiesModel.removecity = (cityName) => {
-    return citiesModel.remove({name: cityName});
+  return citiesModel.remove({ name: cityName });
 }
 
 export default citiesModel;
