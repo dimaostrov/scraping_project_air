@@ -32,7 +32,12 @@ const citieSchema = mongoose.Schema({
   },
   regions: [{
     type: Number, unique: true
-  }]
+  }],
+  top_properties: [
+    {
+      type: Object, unique: true
+    }
+  ]
 
 },
   { collection: 'city' });

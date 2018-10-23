@@ -1,5 +1,6 @@
 import axios from 'axios';
 import citiesModel from './models/cities.model';
+import regionsModel from './models/regions.model';
 import fs from 'fs';
 import dbConnection from './db/connect';
 // SF, SD and LA is 6, Nashvile Tennessee is 44
@@ -15,7 +16,7 @@ import dbConnection from './db/connect';
 
 dbConnection();
 
-const stateIDs = [6, 11, 23, 39, 40, 44, 45, 56]
+const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
 const TEST_STATE = 6
 const access_token = 'MjM3Ng|0211989ae83d4253a6fa9f254da36a8b';
@@ -30,15 +31,15 @@ async function go(fn, stateId) {
   try {
     const cityData = axios.get(fn(stateId))
     const res = await cityData;
-    const cities = await res.data.zip_codes;
-    cities.map(x => addRegionToCity(x.zip_code));
+    const cities = await res.data;
+    cities.map(x => addRegions(x));
   } catch (e) {
     console.error(e);
   }
 }
 
-stateIDs.map(x => go(zipcodesEndpoint, x));
-
+// stateIDs.map(x => go(zipcodesEndpoint, x));
+go(topListings, 957);
 
 
 /*
@@ -72,6 +73,10 @@ citiesModel.find({}, function(err, cities){
  * 
  * 
  */
+
+const addRegions = (region) => {
+  regionsModel.create({id: region.area.id, zip: region.area.name, top_listings: region.top_listings})
+}
 
 const addCityToDB = (city) => {
   
