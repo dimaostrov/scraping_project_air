@@ -29,19 +29,11 @@ async function go() {
   try {
     const cityData = axios.get(cityEndpoint(TEST_STATE))
     const res = await cityData;
-    const cities = 
-    fs.writeFileSync('./data/ca.json', JSON.stringify(res.data, null, 4), (err) => {
-      if(err) {
-        console.log('An error occured while writing JSON');
-        return console.log(err);
-      }
-      console.log('JSON file has been saved');
-      console.log(res);
-    })
+    cities = res.data.cities;
+    cities.map(x => x.city.annual_revenue_potential['50th'] > 40000 && addCityToDB(x.city))
   } catch (e) {
     console.error(e);
   }
-
 }
 
 go()
@@ -57,3 +49,14 @@ go()
    * 
    * 
    */
+
+const writeToFile = (res, fileNameToWrite) => {
+  fs.writeFileSync(`./data/${fileNameToWrite}.json`, JSON.stringify(res.data, null, 4), (err) => {
+    if(err) {
+      console.log('An error occured while writing JSON');
+      return console.log(err);
+    }
+    console.log('JSON file has been saved');
+    console.log(res);
+  });
+};

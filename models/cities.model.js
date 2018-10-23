@@ -7,6 +7,24 @@ const citieschema = mongoose.Schema({
     unique: true,
     index: true,
   },
+  occupancy_ltm: {
+    type: Number,
+    required: true,
+  },
+  city_id: {
+    type: Number,
+    required: true,
+    unique: true,
+  },
+  num_total_listings: {
+    type: Number,
+    required: true,
+  },
+  num_active_listings: {
+    type: Number,
+    required: true,
+  },
+
 },
   { collection: 'city' });
 
