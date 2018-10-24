@@ -21,16 +21,10 @@ const regionSchema = mongoose.Schema({
 
 const regionsModel = mongoose.model('region', regionSchema);
 
-regionsModel.getAll = () => {
-  return regionsModel.find({});
+regionsModel.returnListings = (arrayOfIDs) => {
+  const listings = arrayOfIDs.map(id => regionsModel.find({id: id}));
+  return listings;
 }
 
-regionsModel.addCity = (cityToAdd) => {
-  return cityToAdd.save();
-}
-
-regionsModel.removeCity = (cityName) => {
-  return regionsModel.remove({ name: cityName });
-}
 
 export default regionsModel;
