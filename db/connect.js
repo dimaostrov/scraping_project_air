@@ -17,4 +17,12 @@ const connectToDb = async () => {
     }
 }
 
-export default connectToDb;
+const disconnectFromDB = () => {
+    const db = Mongoose.connection;
+    db.close();
+}
+
+export {
+    connectToDb,
+    disconnectFromDB
+}
