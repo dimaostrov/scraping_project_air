@@ -1,4 +1,5 @@
 import axios from 'axios';
+import pMap from 'p-map';
 import citiesModel from './models/cities.model';
 import regionsModel from './models/regions.model';
 import fs from 'fs';
@@ -19,7 +20,7 @@ dbConnection();
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
 const TEST_STATE = 6
-const access_token = 'MjM3Ng|0211989ae83d4253a6fa9f254da36a8b';
+const access_token = 'MjM3Ng|0f8a7a956b8b43cfa467882365a19e23';
 
 const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&state_id=${state_id}&show_hvi=true`;
 
@@ -27,19 +28,36 @@ const cityEndpoint = state_id => `https://api.airdna.co/v1/explorer/cities?acces
 
 const topListings = region_id => `https://api.airdna.co/v1/explorer/top-listings?access_token=${access_token}&bedrooms=2&bedrooms=3&region_id=${region_id}`;
 
-async function go(fn, stateId) {
+async function go(stateId) {
   try {
-    const cityData = axios.get(fn(stateId))
+    await setTimeout(function(){ console.log('wait'); }, 8000)
+    const cityData = axios.get(topListings(stateId))
     const res = await cityData;
     const cities = await res.data;
-    cities.map(x => addRegions(x));
+    //cities.map(x => addRegions(x));
+    addRegions(cities);
   } catch (e) {
     console.error(e);
   }
 }
 
 // stateIDs.map(x => go(zipcodesEndpoint, x));
-go(topListings, 957);
+// go(topListings, 957);
+
+const scrapeAllRegions = () => {
+  citiesModel.find({}, (err, cities) => {
+    const region = cities.map(x => x.regions);
+    pMap(region, go, {concurrency: 4})
+      .then(result => {
+        console.log(region, "logged");
+      });
+
+    // cities.map(x => go(topListings, x.regions))
+
+  })
+}
+
+scrapeAllRegions();
 
 
 /*

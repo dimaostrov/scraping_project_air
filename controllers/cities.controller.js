@@ -3,6 +3,18 @@ import logger from '../core/logger/app-logger'
 
 const controller = {};
 
+controller.getAllCities = async (req, res) => {
+
+}
+
+controller.getAllZipsOfCity = async (req, res) => {
+
+}
+
+controller.getAllRegionsOfZip = async (req, res) => {
+
+}
+
 controller.getAll = async (req, res) => {
     try {
         const cities = await city.getAll();
