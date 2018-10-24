@@ -48,12 +48,8 @@ citiesModel.getAll = () => {
   return citiesModel.find({});
 }
 
-citiesModel.addCity = (cityToAdd) => {
-  return cityToAdd.save();
-}
-
-citiesModel.removeCity = (cityName) => {
-  return citiesModel.remove({ name: cityName });
+citiesModel.getByCity = (cityName) => {
+  return citiesModel.find({name: cityName});
 }
 
 export default citiesModel;

@@ -6,6 +6,10 @@ router.get('/allcities', (req, res) => {
     cityController.getAll(req, res);
 });
 
+router.post('/cityname/', (req, res) => {
+    cityController.getByCity(req, res);
+});
+
 
 
 export default router;

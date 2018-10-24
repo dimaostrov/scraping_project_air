@@ -26,18 +26,15 @@ controller.getAll = async (req, res) => {
     }
 }
 
-controller.addcity = async (req, res) => {
-    let cityToAdd = city({
-        name: req.body.name
-    });
+controller.getByCity = async (req, res) => {
+    const cityName = req.body.name;
     try {
-        const savedcity = await city.addcity(cityToAdd);
-        logger.info('Adding city...');
-        res.send('added: ' + savedcity);
+        const cityInfo = await city.getByCity(cityName);
+        res.send(cityInfo);
     }
     catch(err) {
         logger.error('Error in getting cities- ' + err);
-        res.send('Got error in getAll');
+        res.send('Got error in getByCity');
     }
 }
 
