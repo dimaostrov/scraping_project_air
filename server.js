@@ -5,7 +5,7 @@ import logger from './core/logger/app-logger'
 import morgan from 'morgan'
 import config from './core/config/config.dev'
 import cities from './routes/cities.route'
-import connectToDb from './db/connect'
+import { connectToDb } from './db/connect'
 
 const port = config.serverPort;
 logger.stream = {

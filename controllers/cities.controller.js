@@ -1,6 +1,5 @@
 import city from '../models/cities.model'
 import logger from '../core/logger/app-logger'
-
 const controller = {};
 
 controller.getAllCities = async (req, res) => {
