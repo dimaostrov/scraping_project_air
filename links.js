@@ -15,12 +15,14 @@ import dbConnection from './db/connect';
 // Chicago is Illinois, 15
 // Puerto Rico is 56
 
+
+//still need Philadelphia, Portland, San Antonio, Austin, Chicago, Puerto Rico
 dbConnection();
 
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
-const TEST_STATE = 6
-const access_token = 'MjM3Ng|0f8a7a956b8b43cfa467882365a19e23';
+const TEST_STATE = 4;
+const access_token = 'MjM3Ng|2e7578d964954aa68f57209e47ea6039';
 
 const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&state_id=${state_id}&show_hvi=true`;
 
@@ -57,7 +59,7 @@ const scrapeAllRegions = () => {
   })
 }
 
-scrapeAllRegions();
+// scrapeAllRegions();
 
 
 /*
