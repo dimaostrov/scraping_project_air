@@ -22,7 +22,8 @@ const regionSchema = mongoose.Schema({
 const regionsModel = mongoose.model('region', regionSchema);
 
 regionsModel.returnListings = (arrayOfIDs) => {
-  const listings = arrayOfIDs.map(id => regionsModel.find({id: id}));
+  const listings = arrayOfIDs.map(id => regionsModel.findOne({id: id}).zip);
+  console.log(listings);
   return listings;
 }
 
