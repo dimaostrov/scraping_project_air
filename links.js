@@ -3,7 +3,7 @@ import pMap from 'p-map';
 import citiesModel from './models/cities.model';
 import regionsModel from './models/regions.model';
 import fs from 'fs';
-import dbConnection from './db/connect';
+import {connectToDb, disconnectFromDB } from './db/connect';
 // SF, SD and LA is 6, Nashvile Tennessee is 44
 // Boston MAssachustes is 23
 // Philly is in Pennsylvania, ID is 40
@@ -17,7 +17,7 @@ import dbConnection from './db/connect';
 
 
 //still need Philadelphia, Portland, San Antonio, Austin, Chicago, Puerto Rico
-dbConnection();
+connectToDb();
 
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
@@ -61,7 +61,33 @@ const scrapeAllRegions = () => {
 
 // scrapeAllRegions();
 
+Array.prototype.diff = function(a) {
+  return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
 
+const checkWhichRegionsAreNotFilled = async () => {
+  const cities = await citiesModel.find({});
+  const regions = await regionsModel.find();
+
+  let cityRegions = []
+  let regionsNotGot = []
+  await cities.map(city => cityRegions.push(city.regions));
+  await regions.map(region => regionsNotGot.push(region.id));
+  
+  let regionsGot = flatten(cityRegions);
+  regionsNotGot = flatten(regionsNotGot);
+
+  disconnectFromDB();
+
+  const difference = await regionsGot.diff(regionsNotGot);
+  console.log(difference);
+  return difference;
+  
+}
+
+const flatten = (arr) => Array.prototype.concat(...arr);
+
+checkWhichRegionsAreNotFilled();
 /*
 citiesModel.find({}, function(err, cities){
   cities.map(async city => {

@@ -22,7 +22,6 @@ const regionSchema = mongoose.Schema({
 const regionsModel = mongoose.model('region', regionSchema);
 
 regionsModel.returnListings = async (arrayOfIDs) => {
-  //const listings = await arrayOfIDs.map(id => regionsModel.find({id: id}));
   const listings = regionsModel.find(
     {
       id: {
