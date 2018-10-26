@@ -49,7 +49,33 @@ citiesModel.getAll = () => {
 }
 
 citiesModel.getByCity = (cityName) => {
-  return citiesModel.find({name: cityName});
+  return citiesModel.find({ name: cityName });
+}
+
+citiesModel.getByRegion = (region) => {
+  switch (region) {
+    case 'west':
+      return
+      break;
+    case 'east':
+
+      break;
+    case 'midwest':
+
+      break;
+    case 'mideast':
+
+      break;
+    case 'puertorico':
+      return citiesModel.find({ 'boundary.coordinates.1': { $lt: 19 } })
+      break;
+    default:
+      break;
+  }
+}
+
+const coordinateFinder = ([x, y]) => {
+  return citiesModel.find({ 'boundary.coordinates[1]': { $lt: 19 } })
 }
 
 export default citiesModel;

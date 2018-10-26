@@ -29,27 +29,8 @@ controller.getByCity = async (req, res) => {
 controller.byRegion = async (req, res) => {
     const regionName = req.body.region;
     try {
-        switch (regionName) {
-            case 'west':
-                
-                break;
-            case 'east':
-
-                break;
-            case 'midwest':
-
-                break;
-            case 'mideast':
-
-                break;
-            case 'puertorico':
-
-                break;
-            default:
-                break;
-        }
-        const cityInfo = await city.getByCity(cityName);
-        res.send(cityInfo);
+        const cities = await city.getByRegion(regionName);
+        res.send(cities);
     }
     catch (err) {
         logger.error('Error in getting rerion- ' + err);
