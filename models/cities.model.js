@@ -58,18 +58,32 @@ citiesModel.getByRegion = async (region) => {
       return citiesModel.find({ 'boundary.coordinates.0': { $lt: -114 } })
       break;
     case 'east':
-    return citiesModel.find({$and:
-      [
-        {'boundary.coordinates.0': { $gt: -84 }},
-        {'boundary.coordinates.1': { $gt: 24 }}
-      ] 
-    })
+      return citiesModel.find({
+        $and:
+          [
+            { 'boundary.coordinates.0': { $gt: -84 } },
+            { 'boundary.coordinates.1': { $gt: 24 } }
+          ]
+      })
       break;
     case 'midwest':
-
+      return citiesModel.find({
+        $and:
+          [
+            { 'boundary.coordinates.0': { $gt: -114 } },
+            { 'boundary.coordinates.0': { $lt: -94 } }
+          ]
+      })
       break;
     case 'mideast':
-
+      return citiesModel.find({
+        $and:
+          [
+            { 'boundary.coordinates.0': { $lt: -84 } },
+            { 'boundary.coordinates.0': { $gt: -94 } },
+            { 'boundary.coordinates.1': { $gt: 19 } },
+          ]
+      })
       break;
     case 'puertorico':
       return citiesModel.find({ 'boundary.coordinates.1': { $lt: 19 } })
