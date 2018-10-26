@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import ReactDataSheet from 'react-datasheet';
-
 class App extends Component {
   state = {
     selectedCity: '',
@@ -9,7 +8,7 @@ class App extends Component {
   }
 
   selectCity = (city) => {
-    this.setState({selectedCity: city})
+    this.setState({ selectedCity: city })
   }
 
   render() {
@@ -17,12 +16,12 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          {cities.map(city => <button onClick={() => this.selectCity(city)}>{city}</button>)}
+          <div>
+            {cities.map(city => <button onClick={() => this.selectCity(city)}>{city}</button>)}
+          </div>
           <h3>{this.state.selectedCity}</h3>
         </header>
-        <ReactDataSheet>
 
-        </ReactDataSheet>
       </div>
     );
   }
