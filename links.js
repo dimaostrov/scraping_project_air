@@ -3,7 +3,7 @@ import Bottleneck from 'bottleneck';
 import citiesModel from './models/cities.model';
 import regionsModel from './models/regions.model';
 import colors from 'colors';
-import {connectToDb, disconnectFromDB } from './db/connect';
+import { connectToDb, disconnectFromDB } from './db/connect';
 // SF, SD and LA is 6, Nashvile Tennessee is 44
 // Boston MAssachustes is 23
 // Philly is in Pennsylvania, ID is 40
@@ -26,8 +26,10 @@ const limiter = new Bottleneck({
 
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
+const chicago = 15;
+
 const TEST_STATE = 4;
-const access_token = 'MjM3Ng|ee9b9e82602941228ef0a643f90258b4';
+const access_token = 'MjM3Ng|6ef535ac88b244a9960751e93cbc0426';
 
 const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&state_id=${state_id}&show_hvi=true`;
 
@@ -55,50 +57,49 @@ const scrapeAllRegions = () => {
   citiesModel.find({}, (err, cities) => {
     const region = cities.map(x => x.regions);
     limiter.schedule(() => go(region))
-    .then(result => {
-      console.log(region, "logged");
-    });
+      .then(result => {
+        console.log(region, "logged");
+      });
 
     // cities.map(x => go(topListings, x.regions))
-    
+
   })
 }
 
 // scrapeAllRegions();
 
-Array.prototype.diff = function(a) {
-  return this.filter(function(i) {return a.indexOf(i) < 0;});
+Array.prototype.diff = function (a) {
+  return this.filter(function (i) { return a.indexOf(i) < 0; });
 };
 
 const checkWhichRegionsAreNotFilled = async () => {
-  await connectToDb();
   const cities = await citiesModel.find({ num_total_listings: { $gt: 14 } });
   const regions = await regionsModel.find();
-  
+
   let cityRegions = []
   let regionsNotGot = []
   await cities.map(city => cityRegions.push(city.regions));
   await regions.map(region => regionsNotGot.push(region.id));
-  
+
   let regionsGot = flatten(cityRegions);
   regionsNotGot = flatten(regionsNotGot);
-  
-  
+
+
   const difference = await regionsGot.diff(regionsNotGot);
   console.log(difference.length);
-  
-  for(let uri of difference){
+
+  for (let uri of difference) {
     await goRegions(uri);
     await new Promise(res => setTimeout(res, 3000));
   }
   disconnectFromDB();
-  
+
 }
 
 const flatten = (arr) => Array.prototype.concat(...arr);
 
 
-checkWhichRegionsAreNotFilled();
+// checkWhichRegionsAreNotFilled();
 
 
 
@@ -123,35 +124,36 @@ citiesModel.find({}, function(err, cities){
 
 async function goCitiesAndZip(stateId) {
   try {
-    
+
     const cityData = axios.get(cityEndpoint(stateId), (err, done) => {
-      if(err) console.log(err);
+      if (err) console.log(err);
       console.log('done'.random, done);
     })
     const res = await cityData;
     const cities = await res.data.cities;
     await cities.map(x => addCityToDB(x.city));
     console.log('cities done moving to zips');
-    
+
     const zipData = axios.get(zipcodesEndpoint(stateId))
     const zipRes = await zipData;
     const zips = await zipRes.data.zip_codes;
     await zips.map(zip => addRegionToCity(zip.zip_code));
-    // checkWhichRegionsAreNotFilled();
+    checkWhichRegionsAreNotFilled();
   } catch (e) {
     console.error(e.random);
   }
 }
 
 async function runProgram() {
-  for (let state of stateIDs){
-    await goCitiesAndZip(state);
-    await new Promise(res => setTimeout(res, 3000));
-  }
+  await connectToDb();
+
+  await goCitiesAndZip(chicago);
+  await new Promise(res => setTimeout(res, 3000));
+
   // disconnectFromDB();
 }
 
-//runProgram();
+runProgram();
 
 /*
 * API endpoints
@@ -168,8 +170,8 @@ async function runProgram() {
 
 const addRegions = (region) => {
   console.log('adding started'.random);
-  regionsModel.create({id: region.area.id, zip: region.area.name, top_listings: region.top_listings}, (err, result) => {
-    if(err) console.log(err);
+  regionsModel.create({ id: region.area.id, zip: region.area.name, top_listings: region.top_listings }, (err, result) => {
+    if (err) console.log(err);
     console.log(`${result.zip} added`.random);
   })
 }
@@ -183,7 +185,7 @@ const addCityToDB = (city) => {
 }
 
 const addRegionToCity = (zip) => {
-  citiesModel.update({name: zip.city_name}, { $push: { regions: zip.region_id }}, (err, record) => {
+  citiesModel.update({ name: zip.city_name }, { $push: { regions: zip.region_id } }, (err, record) => {
     if (err) return err;
     console.log(record);
     console.log('regions added'.rainbow);

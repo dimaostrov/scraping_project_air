@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import './App.css';
 import ReactDataSheet from 'react-datasheet';
+import axios from 'axios';
+
 class App extends Component {
   state = {
     selectedCity: '',
-    regions: []
+    regions: [],
+    data: ''
   }
 
-  selectCity = (city) => {
-    this.setState({ selectedCity: city })
+  selectCity = async (city) => {
+    const data = await axios.post(`/api/cityname`, { "name": city });
+    this.setState({ selectedCity: city, data: data.data });
   }
 
   render() {
@@ -20,8 +24,8 @@ class App extends Component {
             {cities.map(city => <button onClick={() => this.selectCity(city)}>{city}</button>)}
           </div>
           <h3>{this.state.selectedCity}</h3>
+          <p>{this.state.data && this.state.data[0].name}</p>
         </header>
-
       </div>
     );
   }

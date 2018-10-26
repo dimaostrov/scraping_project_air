@@ -1,5 +1,6 @@
-import city from '../models/cities.model'
-import logger from '../core/logger/app-logger'
+import city from '../models/cities.model';
+import regions from '../models/regions.model';
+import logger from '../core/logger/app-logger';
 const controller = {};
 
 controller.getAll = async (req, res) => {
@@ -38,5 +39,17 @@ controller.byRegion = async (req, res) => {
     }
 }
 
+controller.getCityRegions = async (req, res) => {
+    const city = req.body.name;
+    try {
+        const cityInfo = await city.getByCity(city);
+        console.log(cityInfo);
+        res.send(cityInfo);
+    }
+    catch (err) {
+        logger.error('Error in getting city region data- ' + err);
+        res.send('Got error in getCityRegions');
+    }
+}
 
 export default controller;
