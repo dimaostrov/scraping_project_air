@@ -22,6 +22,12 @@ router.post('/regionIDs/', (req, res) => {
 // @region sting to give back multiple cities
 router.post('/region', (req, res) => {
     cityController.byRegion(req, res);
+}) 
+
+// route to receive multiple properties by the name of the city
+// @name string of city
+router.post('/listings', (req, res) => {
+    cityController.getCityRegions(req, res)
 })
 
 export default router;

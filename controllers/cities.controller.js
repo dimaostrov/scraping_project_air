@@ -40,11 +40,12 @@ controller.byRegion = async (req, res) => {
 }
 
 controller.getCityRegions = async (req, res) => {
-    const city = req.body.name;
+    const cityName = req.body.name;
     try {
-        const cityInfo = await city.getByCity(city);
-        console.log(cityInfo);
-        res.send(cityInfo);
+        const cityInfo = await city.getByCity(cityName);
+        const regionsOfCity = cityInfo[0].regions;
+        const listings = await regions.returnListings(regionsOfCity);
+        res.send(listings);
     }
     catch (err) {
         logger.error('Error in getting city region data- ' + err);
