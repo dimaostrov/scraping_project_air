@@ -27,7 +27,7 @@ const limiter = new Bottleneck({
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
 const TEST_STATE = 4;
-const access_token = 'MjM3Ng|b0d4657216ac4c16a898a1cfc391bc34';
+const access_token = 'MjM3Ng|ee9b9e82602941228ef0a643f90258b4';
 
 const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&state_id=${state_id}&show_hvi=true`;
 
@@ -71,7 +71,8 @@ Array.prototype.diff = function(a) {
 };
 
 const checkWhichRegionsAreNotFilled = async () => {
-  const cities = await citiesModel.find({});
+  await connectToDb();
+  const cities = await citiesModel.find({ num_total_listings: { $gt: 14 } });
   const regions = await regionsModel.find();
   
   let cityRegions = []
@@ -88,15 +89,16 @@ const checkWhichRegionsAreNotFilled = async () => {
   
   for(let uri of difference){
     await goRegions(uri);
-    await new Promise(res => setTimeout(res, 2000));
+    await new Promise(res => setTimeout(res, 3000));
   }
-  // disconnectFromDB();
+  disconnectFromDB();
   
 }
 
 const flatten = (arr) => Array.prototype.concat(...arr);
 
-// checkWhichRegionsAreNotFilled();
+
+checkWhichRegionsAreNotFilled();
 
 
 
@@ -142,7 +144,6 @@ async function goCitiesAndZip(stateId) {
 }
 
 async function runProgram() {
-  await connectToDb();
   for (let state of stateIDs){
     await goCitiesAndZip(state);
     await new Promise(res => setTimeout(res, 3000));
@@ -150,7 +151,7 @@ async function runProgram() {
   // disconnectFromDB();
 }
 
-runProgram();
+//runProgram();
 
 /*
 * API endpoints
@@ -169,7 +170,7 @@ const addRegions = (region) => {
   console.log('adding started'.random);
   regionsModel.create({id: region.area.id, zip: region.area.name, top_listings: region.top_listings}, (err, result) => {
     if(err) console.log(err);
-    console.log(`${result} added`.random);
+    console.log(`${result.zip} added`.random);
   })
 }
 

@@ -8,7 +8,7 @@ controller.getAll = async (req, res) => {
         logger.info('sending all cities...');
         res.send(cities);
     }
-    catch(err) {
+    catch (err) {
         logger.error('Error in getting cities- ' + err);
         res.send('Got error in getAll');
     }
@@ -20,10 +20,42 @@ controller.getByCity = async (req, res) => {
         const cityInfo = await city.getByCity(cityName);
         res.send(cityInfo);
     }
-    catch(err) {
+    catch (err) {
         logger.error('Error in getting cities- ' + err);
         res.send('Got error in getByCity');
     }
 }
+
+controller.byRegion = async (req, res) => {
+    const regionName = req.body.region;
+    try {
+        switch (regionName) {
+            case 'west':
+                
+                break;
+            case 'east':
+
+                break;
+            case 'midwest':
+
+                break;
+            case 'mideast':
+
+                break;
+            case 'puertorico':
+
+                break;
+            default:
+                break;
+        }
+        const cityInfo = await city.getByCity(cityName);
+        res.send(cityInfo);
+    }
+    catch (err) {
+        logger.error('Error in getting rerion- ' + err);
+        res.send('Got error in byRegion');
+    }
+}
+
 
 export default controller;

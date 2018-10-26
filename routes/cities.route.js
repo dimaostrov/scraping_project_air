@@ -15,6 +15,8 @@ router.post('/regionIDs/', (req, res) => {
     regionController.getPropertiesFromRegions(req, res);
 })
 
-
+router.post('/region', (req, res) => {
+    cityController.byRegion(req, res);
+})
 
 export default router;
