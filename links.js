@@ -1,8 +1,8 @@
 import axios from 'axios';
-import pMap from 'p-map';
+import Bottleneck from 'bottleneck';
 import citiesModel from './models/cities.model';
 import regionsModel from './models/regions.model';
-import fs from 'fs';
+import colors from 'colors';
 import {connectToDb, disconnectFromDB } from './db/connect';
 // SF, SD and LA is 6, Nashvile Tennessee is 44
 // Boston MAssachustes is 23
@@ -16,13 +16,18 @@ import {connectToDb, disconnectFromDB } from './db/connect';
 // Puerto Rico is 56
 
 
+const stateIDsLeftToGet = [40, 39, 45, 15, 56]
 //still need Philadelphia, Portland, San Antonio, Austin, Chicago, Puerto Rico
-connectToDb();
+
+const limiter = new Bottleneck({
+  minTime: 333,
+  maxConcurrent: 1,
+});
 
 const stateIDs = [4, 6, 11, 23, 39, 40, 44, 45, 56]
 
 const TEST_STATE = 4;
-const access_token = 'MjM3Ng|2e7578d964954aa68f57209e47ea6039';
+const access_token = 'MjM3Ng|b0d4657216ac4c16a898a1cfc391bc34';
 
 const zipcodesEndpoint = state_id => `https://api.airdna.co/v1/explorer/zipcodes?access_token=${access_token}&state_id=${state_id}&show_hvi=true`;
 
@@ -30,13 +35,13 @@ const cityEndpoint = state_id => `https://api.airdna.co/v1/explorer/cities?acces
 
 const topListings = region_id => `https://api.airdna.co/v1/explorer/top-listings?access_token=${access_token}&bedrooms=2&bedrooms=3&region_id=${region_id}`;
 
-async function go(stateId) {
+async function goRegions(stateId) {
   try {
-    await setTimeout(function(){ console.log('wait'); }, 8000)
     const cityData = axios.get(topListings(stateId))
     const res = await cityData;
     const cities = await res.data;
     //cities.map(x => addRegions(x));
+    //console.log(cities);
     addRegions(cities);
   } catch (e) {
     console.error(e);
@@ -49,13 +54,13 @@ async function go(stateId) {
 const scrapeAllRegions = () => {
   citiesModel.find({}, (err, cities) => {
     const region = cities.map(x => x.regions);
-    pMap(region, go, {concurrency: 4})
-      .then(result => {
-        console.log(region, "logged");
-      });
+    limiter.schedule(() => go(region))
+    .then(result => {
+      console.log(region, "logged");
+    });
 
     // cities.map(x => go(topListings, x.regions))
-
+    
   })
 }
 
@@ -68,7 +73,7 @@ Array.prototype.diff = function(a) {
 const checkWhichRegionsAreNotFilled = async () => {
   const cities = await citiesModel.find({});
   const regions = await regionsModel.find();
-
+  
   let cityRegions = []
   let regionsNotGot = []
   await cities.map(city => cityRegions.push(city.regions));
@@ -76,18 +81,25 @@ const checkWhichRegionsAreNotFilled = async () => {
   
   let regionsGot = flatten(cityRegions);
   regionsNotGot = flatten(regionsNotGot);
-
-  disconnectFromDB();
-
+  
+  
   const difference = await regionsGot.diff(regionsNotGot);
-  console.log(difference);
-  return difference;
+  console.log(difference.length);
+  
+  for(let uri of difference){
+    await goRegions(uri);
+    await new Promise(res => setTimeout(res, 2000));
+  }
+  // disconnectFromDB();
   
 }
 
 const flatten = (arr) => Array.prototype.concat(...arr);
 
-checkWhichRegionsAreNotFilled();
+// checkWhichRegionsAreNotFilled();
+
+
+
 /*
 citiesModel.find({}, function(err, cities){
   cities.map(async city => {
@@ -101,33 +113,70 @@ citiesModel.find({}, function(err, cities){
         if(err) return err;
         console.log(done, 'done');
       });
-  
+      
     }) 
   })
 })
 */
 
+async function goCitiesAndZip(stateId) {
+  try {
+    
+    const cityData = axios.get(cityEndpoint(stateId), (err, done) => {
+      if(err) console.log(err);
+      console.log('done'.random, done);
+    })
+    const res = await cityData;
+    const cities = await res.data.cities;
+    await cities.map(x => addCityToDB(x.city));
+    console.log('cities done moving to zips');
+    
+    const zipData = axios.get(zipcodesEndpoint(stateId))
+    const zipRes = await zipData;
+    const zips = await zipRes.data.zip_codes;
+    await zips.map(zip => addRegionToCity(zip.zip_code));
+    // checkWhichRegionsAreNotFilled();
+  } catch (e) {
+    console.error(e.random);
+  }
+}
+
+async function runProgram() {
+  await connectToDb();
+  for (let state of stateIDs){
+    await goCitiesAndZip(state);
+    await new Promise(res => setTimeout(res, 3000));
+  }
+  // disconnectFromDB();
+}
+
+runProgram();
+
 /*
 * API endpoints
 * 
- * cities - annual_revenue_potential, name of the city
- * 
- * zipcodes - we have zipcodes, takes in a state ID, also annual_rental_earning_potential
- *      result.zip_codes.filter(zip => zip.annual_revenue_potential.50th > 40000 && {...zip})       
- *      also result.zip_codes.map(zip => region_id)
- * top-listings - 25 of the top listings, needs cityID
+* cities - annual_revenue_potential, name of the city
+* 
+* zipcodes - we have zipcodes, takes in a state ID, also annual_rental_earning_potential
+*      result.zip_codes.filter(zip => zip.annual_revenue_potential.50th > 40000 && {...zip})       
+*      also result.zip_codes.map(zip => region_id)
+* top-listings - 25 of the top listings, needs cityID
  * 
  * 
  */
 
 const addRegions = (region) => {
-  regionsModel.create({id: region.area.id, zip: region.area.name, top_listings: region.top_listings})
+  console.log('adding started'.random);
+  regionsModel.create({id: region.area.id, zip: region.area.name, top_listings: region.top_listings}, (err, result) => {
+    if(err) console.log(err);
+    console.log(`${result} added`.random);
+  })
 }
 
 const addCityToDB = (city) => {
-  
+  console.log(city.name, city.adr);
   citiesModel.create(city, function (err, record) {
-    if (err) return err;
+    if (err) console.log(err);
     console.log(record)
   });
 }
@@ -136,16 +185,7 @@ const addRegionToCity = (zip) => {
   citiesModel.update({name: zip.city_name}, { $push: { regions: zip.region_id }}, (err, record) => {
     if (err) return err;
     console.log(record);
+    console.log('regions added'.rainbow);
   });
 }
 
-const writeToFile = (res, fileNameToWrite) => {
-  fs.writeFileSync(`./data/${fileNameToWrite}.json`, JSON.stringify(res.data, null, 4), (err) => {
-    if (err) {
-      console.log('An error occured while writing JSON');
-      return console.log(err);
-    }
-    console.log('JSON file has been saved');
-    console.log(res);
-  });
-};
