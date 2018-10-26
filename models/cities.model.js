@@ -52,13 +52,18 @@ citiesModel.getByCity = (cityName) => {
   return citiesModel.find({ name: cityName });
 }
 
-citiesModel.getByRegion = (region) => {
+citiesModel.getByRegion = async (region) => {
   switch (region) {
     case 'west':
-      return
+      return citiesModel.find({ 'boundary.coordinates.0': { $lt: -114 } })
       break;
     case 'east':
-
+    return citiesModel.find({$and:
+      [
+        {'boundary.coordinates.0': { $gt: -84 }},
+        {'boundary.coordinates.1': { $gt: 24 }}
+      ] 
+    })
       break;
     case 'midwest':
 
@@ -72,10 +77,6 @@ citiesModel.getByRegion = (region) => {
     default:
       break;
   }
-}
-
-const coordinateFinder = ([x, y]) => {
-  return citiesModel.find({ 'boundary.coordinates[1]': { $lt: 19 } })
 }
 
 export default citiesModel;
