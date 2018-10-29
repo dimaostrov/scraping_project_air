@@ -28,8 +28,8 @@ app.use(morgan("dev", { "stream": logger.stream }));
 app.use('/api', cities);
 
 //Index route
-app.get('/', (req, res) => {
-    res.send('Invalid endpoint!');
+app.get('*', (req,res) =>{
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });
 
 app.listen(port, () => {
