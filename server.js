@@ -6,6 +6,7 @@ import morgan from 'morgan'
 import config from './core/config/config.dev'
 import cities from './routes/cities.route'
 import { connectToDb } from './db/connect'
+import path from 'path';
 
 // import auth from './routes/auth.route'
 
@@ -23,6 +24,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev", { "stream": logger.stream }));
+
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 
 // app.use('/auth', auth);
 app.use('/api', cities);
