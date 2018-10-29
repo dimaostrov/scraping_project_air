@@ -40,3 +40,6 @@ node_modules
 # scraping 
 links.js
 links2.js
+
+# client build
+client/build
