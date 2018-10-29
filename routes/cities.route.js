@@ -1,6 +1,7 @@
 import express from "express";
 import cityController from "../controllers/cities.controller";
 import regionController from '../controllers/regions.controller';
+import { createInterface } from "readline";
 const router = express.Router()
 
 // route to get all cities
@@ -28,6 +29,10 @@ router.post('/region', (req, res) => {
 // @name string of city
 router.post('/listings', (req, res) => {
     cityController.getCityRegions(req, res)
+})
+
+router.post('/topzipbycity', (req, res) => {
+    cityController.topZipByCity(req, res)
 })
 
 export default router;

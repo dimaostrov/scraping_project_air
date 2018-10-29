@@ -7,7 +7,7 @@ import config from './core/config/config.dev'
 import cities from './routes/cities.route'
 import { connectToDb } from './db/connect'
 
-import auth from './routes/auth.route'
+// import auth from './routes/auth.route'
 
 const port = config.serverPort;
 logger.stream = {
@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev", { "stream": logger.stream }));
 
-app.use('/auth', auth);
+// app.use('/auth', auth);
 app.use('/api', cities);
 
 //Index route
