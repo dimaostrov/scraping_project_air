@@ -8,7 +8,7 @@ import cities from './routes/cities.route'
 import { connectToDb } from './db/connect'
 import path from 'path';
 
-// import auth from './routes/auth.route'
+import auth from './routes/auth.route'
 
 const port = config.serverPort;
 logger.stream = {
@@ -28,7 +28,7 @@ app.use(morgan("dev", { "stream": logger.stream }));
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 
-// app.use('/auth', auth);
+app.use('/auth', auth);
 app.use('/api', cities);
 
 //Index route

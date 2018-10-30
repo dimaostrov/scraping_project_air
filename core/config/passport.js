@@ -2,7 +2,7 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import User from '../../models/user.model';
 import settings from './settings';
 
-export default passport => {
+module.exports = function (passport){
   let opts = {};
   opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
   opts.secretOrKey = settings.secret;
