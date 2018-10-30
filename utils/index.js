@@ -6,7 +6,7 @@ export const authenticator = () => {
         session: false
     });
 }
-export const tokenize = (x) => {
+export const tokenize = (x, req, res) => {
     const token = getToken(req.headers);
     if (token) {
         return x;
