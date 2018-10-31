@@ -89,8 +89,8 @@ controller.topZipByCity = async (req, res) => {
 
 controller.getAllCityNames = async (req, res) => {
     const namesData = await city.find({}, {name: 1, _id:0});
-    const names = namesData.map(x => x.name);
-    res.send(names);
+    // const names = namesData.map(x => x.name);
+    res.send(namesData);
 
 }
 
