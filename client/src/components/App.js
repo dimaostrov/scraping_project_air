@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
+import Search from './Search';
 
 // import ReactDataSheet from 'react-datasheet';
 class App extends Component {
@@ -45,6 +46,7 @@ class App extends Component {
           {regions.map(x => regionBtn(x))}
         {logoutButton}
           </div>
+          <Search />
           {this.state.regions && 'insert chart here'}
       </div>
     );
