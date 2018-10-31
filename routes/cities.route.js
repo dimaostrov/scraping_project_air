@@ -26,14 +26,26 @@ router.post('/region', authenticator(), (req, res) => {
     tokenize(cityController.byRegion(req, res), req, res);
 })
 
+router.post('/regionnonauth', (req, res) => {
+    cityController.byRegion(req, res);
+})
+
 // route to receive multiple properties by the name of the city
 // @name string of city
 router.post('/listings', authenticator(), (req, res) => {
     tokenize(cityController.getCityRegions(req, res),req, res)
 })
 
+router.post('/listingsnonauth', (req, res) => {
+    cityController.getCityRegions(req, res)
+})
+
 router.post('/topzipbycity', authenticator(), (req, res) => {
     tokenize(cityController.topZipByCity(req, res), req, res)
+})
+
+router.get('/citynames', (req, res) => {
+    cityController.getAllCityNames(req, res);
 })
 
 export default router;

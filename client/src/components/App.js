@@ -1,31 +1,20 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
-// import ReactDataSheet from 'react-datasheet';
-import ZaL from './ZipAndListings';
 
+// import ReactDataSheet from 'react-datasheet';
 class App extends Component {
   state = {
     selectedCity: '',
     regions: [],
-    data: false
+    data: false,
+    message: ''
   }
 
   componentDidMount() {
-    axios.defaults.headers.common['Authorization'] = localStorage.getItem('jwtToken');
-  }
-
-  selectCity = (city) => {
-    axios.post(`/api/listings`, { "name": city })
-      .then(res => {
-        this.setState({ selectedCity: city, data: res.data });
-      })
-      .catch(err => {
-        if (err.response.status === 401) {
-          this.props.history.push('/login');
-        }
-      });
+    const auth = localStorage.getItem('jwtToken');
+    axios.defaults.headers.common['Authorization'] = auth;
+    if (!auth) window.location = '/login';
   }
 
   logout = () => {
@@ -33,20 +22,30 @@ class App extends Component {
     window.location.reload();
   }
 
+  getRegion = (x) => {
+    axios.post('/api/region', { region: x})
+    .then((result) => {
+      this.setState({ regions: result.data });
+    })
+    .catch((error) => {
+      if(error) {
+        this.setState({ message: 'couldn\'t get region' });
+      }
+    });
+  }
+
   render() {
-    const cities = ['San Francisco', 'Los Angeles', 'San Diego', 'Nashville', 'Boston', 'Philadephia', 'Key West', 'Portland', 'San Antonio', 'Sedona', 'Austin', 'Chicago', 'Puerto Rico']
-    const listings = this.state.data && this.state.data.map(zip => <ZaL props={zip} />);
-    const logoutButton = localStorage.getItem('jwtToken') && <button class="btn btn-primary" onClick={this.logout}>Logout</button>
+    const logoutButton = localStorage.getItem('jwtToken') && <button className="btn btn-warning" onClick={this.logout}>Logout</button>
+    const regions = ['east', 'mideast', 'puertorico', 'midwest', 'west'];
+    const regionBtn = (name) => <button className="btn btn-success" style={{marginRight: '2rem'}} onClick={() => this.getRegion(name)}>{name}</button>
     return (
       <div className="App">
-        {logoutButton}
-        <header className="App-header">
+        <h3 style={{margin: '2rem'}}>Select a Region:</h3>
           <div>
-            {cities.map(city => <button onClick={() => this.selectCity(city)}>{city}</button>)}
+          {regions.map(x => regionBtn(x))}
+        {logoutButton}
           </div>
-          <h3>{this.state.selectedCity}</h3>
-        </header>
-        <div>{listings}</div>
+          {this.state.regions && 'insert chart here'}
       </div>
     );
   }

@@ -87,4 +87,10 @@ controller.topZipByCity = async (req, res) => {
     }
 }
 
+controller.getAllCityNames = async (req, res) => {
+    const names = await city.find({}, {name: 1, _id:0});
+    console.log(names);
+    res.send(names);
+}
+
 export default controller;

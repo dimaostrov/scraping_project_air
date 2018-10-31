@@ -3,7 +3,6 @@ import React from 'react';
 const ZipAndListings = props => {
   const { zip, top_listings } = props.props;
   const listingElement = top_listings.map(x => <Listings props={x[0].listing} />)
-  console.log('the zip is', zip);
   return ( <div>
     <h3>{zip}</h3>
     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row'}}>{listingElement}</div>  
