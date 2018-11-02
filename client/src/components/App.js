@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
 import Search from './Search';
+import airStore from '../store';
+import { observer } from 'mobx-react'
+// import DevTools from 'mobx-react-devtools'
+import RegionSelection from './RegionSelection';
 
 // import ReactDataSheet from 'react-datasheet';
 class App extends Component {
@@ -23,34 +27,23 @@ class App extends Component {
     window.location.reload();
   }
 
-  getRegion = (x) => {
-    axios.post('/api/region', { region: x})
-    .then((result) => {
-      this.setState({ regions: result.data });
-    })
-    .catch((error) => {
-      if(error) {
-        this.setState({ message: 'couldn\'t get region' });
-      }
-    });
-  }
 
   render() {
     const logoutButton = localStorage.getItem('jwtToken') && <button className="btn btn-warning" onClick={this.logout}>Logout</button>
-    const regions = ['east', 'mideast', 'puertorico', 'midwest', 'west'];
-    const regionBtn = (name) => <button className="btn btn-success" style={{marginRight: '2rem'}} onClick={() => this.getRegion(name)}>{name}</button>
     return (
       <div className="App">
-        <h3 style={{margin: '2rem'}}>Select a Region:</h3>
-          <div>
-          {regions.map(x => regionBtn(x))}
-        {logoutButton}
-          </div>
-          <Search />
-          {this.state.regions && 'insert chart here'}
+        <h3 style={{ margin: '2rem' }}>Select a Region:</h3>
+        <div>
+          <RegionSelection />
+          {logoutButton}
+        </div>
+        <Search />
+        {airStore.regions && 'insert chart here'}
       </div>
     );
   }
 }
+
+App = observer(App)
 
 export default App;

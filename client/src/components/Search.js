@@ -1,14 +1,9 @@
 import React from 'react';
 import Autocomplete from 'react-autocomplete';
-
+import airStore from '../store';
+import { observer } from 'mobx-react'
 
 class SearchBox extends React.Component {
-
-  state = {
-    searchTerm: '',
-    selected: ''
-  }
-
 
   render() {
     return (
@@ -22,9 +17,9 @@ class SearchBox extends React.Component {
               {item.name}
             </div>
           }
-          value={this.state.searchTerm}
+          value={airStore.searchTerm}
           onChange={(e) => this._updateTerm(e)}
-          onSelect={(val) => this.setState({ selected: val })}
+          onSelect={(val) => airStore.setCity(val)}
         />
 
       </div>
@@ -33,9 +28,11 @@ class SearchBox extends React.Component {
 
   _updateTerm = (e) => {
     const newWord = e.target.value
-    this.setState({ searchTerm: newWord })
+    airStore.searchTerm = newWord;
   }
 }
+
+SearchBox = observer(SearchBox);
 
 export default SearchBox;
 
