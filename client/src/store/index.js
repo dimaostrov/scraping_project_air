@@ -11,7 +11,7 @@ const getRegions = async (cityName) => {
 const getCityInfo = async (cityName) => {
   const res = await axios.post('/api/cityname', {name: cityName})
   console.log('cityInfo is ', await res.data)
-  return res.data
+  return res.data;
 }
 
 const getUsRegions = async (regionName) => {
@@ -27,10 +27,6 @@ class Store {
   usRegion = '';
   region = '';
   topListings = '';
-
-  constructor(){
-    this.setCity('Los Angeles')
-  }
 
   setCity = async (val) => {
     this.city = val; 

@@ -6,7 +6,7 @@ import airStore from '../store';
 import { observer } from 'mobx-react'
 // import DevTools from 'mobx-react-devtools'
 import RegionSelection from './RegionSelection';
-
+import RegionScatter from './ScatterChart';
 // import ReactDataSheet from 'react-datasheet';
 class App extends Component {
   state = {
@@ -30,6 +30,7 @@ class App extends Component {
 
   render() {
     const logoutButton = localStorage.getItem('jwtToken') && <button className="btn btn-warning" onClick={this.logout}>Logout</button>
+    const sampleData = [{num_total_listings: 5, city_id: 6}, {num_total_listings: 6, city_id:9}]
     return (
       <div className="App">
         <h3 style={{ margin: '2rem' }}>Select a Region:</h3>
@@ -38,7 +39,7 @@ class App extends Component {
           {logoutButton}
         </div>
         <Search />
-        {airStore.regions && 'insert chart here'}
+        {airStore.region && Object.values(airStore.region).map(x => <div>{x}</div>)}
       </div>
     );
   }

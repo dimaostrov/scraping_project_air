@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Seed project for easily getting started with express for es6",
   "scripts": {
-    "start": "nodemon ./server.js --exec babel-node",
+    "start": "nodemon ./server.js --ignore 'client' --exec babel-node",
     "both": "concurrently \"yarn start\" \"cd client && yarn start\" ",
     "buildclient": "cd client && yarn build",
     "buildboth": "yarn cleandir && yarn buildclient && yarn build && yarn copybuild",

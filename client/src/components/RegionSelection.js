@@ -6,7 +6,7 @@ const regions = ['east', 'mideast', 'puertorico', 'midwest', 'west'];
 const RegionSelection = () => {
   return (
     <div>
-      {regions.map(x => <RegionBtn name={x} />)}
+      {regions.map(x => <RegionBtn name={x} key={x} />)}
     </div>
   );
 }
