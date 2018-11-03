@@ -32,7 +32,6 @@ class App extends Component {
 
   render() {
     const logoutButton = localStorage.getItem('jwtToken') && <button className="btn btn-warning" onClick={this.logout}>Logout</button>
-    const sampleData = [{num_total_listings: 5, city_id: 6}, {num_total_listings: 6, city_id:9}]
     return (
       <div className="App">
         <h3 style={{ margin: '2rem' }}>Select a Region:</h3>
@@ -44,7 +43,7 @@ class App extends Component {
         {airStore.cityInfo && <CityInfo data={airStore.cityInfo} />}
         <Search />
         {airStore.regions && <RegionsScatter data={airStore.regions} />}
-        {airStore.zips && <TopZips data={airStore.zips} />}
+        {airStore.topZips && <TopZips topData={airStore.topZips} allData={airStore.zips} />}
       </div>
     );
   }

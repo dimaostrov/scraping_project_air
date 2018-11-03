@@ -9,7 +9,6 @@ const getRegions = async (cityName) => {
 
 const getCityInfo = async (cityName) => {
   const res = await axios.post('/api/cityname', {name: cityName})
-  console.log(await res.data[0]);
   return await res.data[0];
 }
 
@@ -30,7 +29,10 @@ class Store {
   usRegion = '';
   regions = '';
   zips = '';
+  topZips = '';
   topListings = '';
+  zipSelected = '';
+  zipProperties = '';
   
   setCity = async (val) => {
     this.city = val; 
@@ -38,6 +40,7 @@ class Store {
     this.usRegion = '';
     this.regions = '';
     this.zips = await getRegions(this.city);
+    this.topZips = await topZipByCity(this.city);
     this.topListings = '';
   }
   
@@ -57,9 +60,12 @@ decorate(Store, {
   usRegion: observable,
   regions: observable,
   zips: observable,
+  topZips: observable,
   topListings: observable,
   setCity: action,
-  setUsRegion: action
+  setUsRegion: action,
+  zipSelected: observable,
+  zipProperties: observable,
 });
 
 const airStore = new Store()
