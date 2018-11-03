@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import '../node_modules/bootstrap/dist/css/bootstrap-reboot.min.css';
 import 'react-table/react-table.css'
 import './index.css';
 import 'react-datasheet/lib/react-datasheet.css';

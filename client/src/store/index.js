@@ -46,6 +46,7 @@ class Store {
   
   setUsRegion = async (val) => {
     this.topZips = '';
+    this.cityInfo = '';
     this.usRegion = val;
     this.regions = await getUsRegions(val);
     this.city = '';
