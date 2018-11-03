@@ -13,7 +13,7 @@ class SearchBox extends React.Component {
           items={names}
           shouldItemRender={(item, value) => item.name.toLowerCase().indexOf(value.toLowerCase()) > -1}
           renderItem={(item, isHighlighted) =>
-            <div style={{ background: isHighlighted ? 'lightray' : 'white' }}>
+            <div key={item} style={{ background: isHighlighted ? 'lightray' : 'white' }}>
               {item.name}
             </div>
           }

@@ -4,19 +4,22 @@ import makeInspectable from 'mobx-devtools-mst';
 
 const getRegions = async (cityName) => {
   const res = await axios.post('/api/listings', {name: cityName})
-  console.log('region is ', await res.data)
-  return res.data
+  return await res.data
 }
 
 const getCityInfo = async (cityName) => {
   const res = await axios.post('/api/cityname', {name: cityName})
-  console.log('cityInfo is ', await res.data)
-  return res.data;
+  console.log(await res.data[0]);
+  return await res.data[0];
 }
 
 const getUsRegions = async (regionName) => {
   const res = await axios.post('/api/region', {region: regionName})
-  console.log('usregions are', await res.data);
+  return await res.data
+}
+
+const topZipByCity = async (cityName) => {
+  const res = await axios.post('/api/topzipbycity', {name: cityName})
   return await res.data
 }
 
@@ -25,20 +28,22 @@ class Store {
   city = '';
   cityInfo = '';
   usRegion = '';
-  region = '';
+  regions = '';
+  zips = '';
   topListings = '';
-
+  
   setCity = async (val) => {
     this.city = val; 
     this.cityInfo = await getCityInfo(this.city);
     this.usRegion = '';
-    this.region = await getRegions(this.city);
+    this.regions = '';
+    this.zips = await getRegions(this.city);
     this.topListings = '';
   }
-
-  setUsRegion = (val) => {
+  
+  setUsRegion = async (val) => {
     this.usRegion = val;
-    this.region = getUsRegions(val);
+    this.regions = await getUsRegions(val);
     this.city = '';
     this.cityInfo = '';
     this.topListings = '';
@@ -50,7 +55,8 @@ decorate(Store, {
   searchTerm: observable,
   city: observable,
   usRegion: observable,
-  region: observable,
+  regions: observable,
+  zips: observable,
   topListings: observable,
   setCity: action,
   setUsRegion: action

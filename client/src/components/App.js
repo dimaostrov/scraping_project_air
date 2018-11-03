@@ -6,7 +6,9 @@ import airStore from '../store';
 import { observer } from 'mobx-react'
 // import DevTools from 'mobx-react-devtools'
 import RegionSelection from './RegionSelection';
-import RegionScatter from './ScatterChart';
+import { RegionsScatter } from './ScatterChart';
+import TopZips from './TopZips';
+import CityInfo from './CityInfo';
 // import ReactDataSheet from 'react-datasheet';
 class App extends Component {
   state = {
@@ -38,8 +40,11 @@ class App extends Component {
           <RegionSelection />
           {logoutButton}
         </div>
+        {airStore.city && <h2>{airStore.city}</h2>}
+        {airStore.cityInfo && <CityInfo data={airStore.cityInfo} />}
         <Search />
-        {airStore.region && Object.values(airStore.region).map(x => <div>{x}</div>)}
+        {airStore.regions && <RegionsScatter data={airStore.regions} />}
+        {airStore.zips && <TopZips data={airStore.zips} />}
       </div>
     );
   }
@@ -48,3 +53,5 @@ class App extends Component {
 App = observer(App)
 
 export default App;
+
+// .map(x => <div>{x}</div>)
